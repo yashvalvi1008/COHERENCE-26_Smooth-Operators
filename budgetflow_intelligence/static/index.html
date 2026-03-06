@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BudgetFlow Intelligence | Public Fund Governance Platform</title>
+  <meta name="description" content="BudgetFlow Intelligence - AI-powered public fund lifecycle tracking, fraud detection, and budget optimization platform for government departments." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ──────────────── SIDEBAR ──────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M2 17l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">BudgetFlow</span>
+        <span class="brand-sub">Intelligence</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Dashboard</div>
+      <a href="#" class="nav-item active" data-page="overview">
+        <span class="nav-icon">⬡</span><span>Overview</span>
+      </a>
+      <a href="#" class="nav-item" data-page="fund-flow">
+        <span class="nav-icon">⇄</span><span>Fund Flow</span>
+      </a>
+
+      <div class="nav-section-label">Intelligence</div>
+      <a href="#" class="nav-item" data-page="anomalies">
+        <span class="nav-icon">⚠</span><span>Anomaly Log</span>
+        <span class="nav-badge" id="badge-anomalies">0</span>
+      </a>
+      <a href="#" class="nav-item" data-page="risk">
+        <span class="nav-icon">◈</span><span>Predictive Risk</span>
+      </a>
+      <a href="#" class="nav-item" data-page="optimizer">
+        <span class="nav-icon">⟳</span><span>Optimizer</span>
+      </a>
+
+      <div class="nav-section-label">Geography</div>
+      <a href="#" class="nav-item" data-page="districts">
+        <span class="nav-icon">◎</span><span>Districts</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="system-status">
+        <span class="status-dot" id="system-status-dot"></span>
+        <span id="system-status-label">Connecting…</span>
+      </div>
+      <div class="sidebar-meta">FY 2025–26 · Q4</div>
+    </div>
+  </aside>
+
+  <!-- ──────────────── MAIN ──────────────── -->
+  <div class="main-wrapper">
+
+    <!-- Top Nav -->
+    <header class="topnav">
+      <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="topnav-title" id="topnav-title">Overview</div>
+      <div class="topnav-right">
+        <div class="scan-btn-wrapper">
+          <button class="btn btn-accent" id="btn-scan">
+            <span class="btn-icon">⚡</span> Run AI Scan
+          </button>
+        </div>
+        <div class="topnav-date">Mar 07, 2026</div>
+        <div class="topnav-fy">FY 2025–26</div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="content" id="content">
+      <div class="page-loader" id="page-loader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">Loading Intelligence…</div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ──────────────── MODAL ──────────────── -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Detail</h3>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ──────────────── TOAST ──────────────── -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ──────────────── TEMPLATES ──────────────── -->
+
+  <!-- OVERVIEW PAGE -->
+  <template id="tpl-overview">
+    <div class="page-enter">
+      <div class="page-header">
+        <h1 class="page-title">Overview</h1>
+        <p class="page-subtitle">Real-time summary of public fund lifecycle and governance KPIs.</p>
+      </div>
+
+      <div class="kpi-grid" id="overview-kpis"></div>
+
+      <div class="section-grid">
+        <div class="card span-2">
+          <div class="card-header">
+            <h2 class="card-title">Monthly Expenditure Trend</h2>
+            <div class="card-actions"><span class="badge badge-blue">FY 2025–26</span></div>
+          </div>
+          <div class="card-body">
+            <canvas id="chart-trend" height="220"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Department Utilization</h2></div>
+          <div class="card-body" id="dept-util-list"></div>
+        </div>
+      </div>
+
+      <div class="section-grid">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Top Alerts</h2>
+            <span class="badge badge-red" id="top-alerts-count">—</span>
+          </div>
+          <div class="card-body" id="top-alerts-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Benford's Law Analysis</h2></div>
+          <div class="card-body">
+            <canvas id="chart-benford" height="200"></canvas>
+            <div id="benford-stats" class="benford-stats"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- FUND FLOW PAGE -->
+  <template id="tpl-fund-flow">
+    <div class="page-enter">
+      <div class="page-header">
+        <h1 class="page-title">Fund Flow</h1>
+        <p class="page-subtitle">Sankey diagram showing the money trail from Ministries → Schemes → Districts.</p>
+      </div>
+      <div class="card full-width">
+        <div class="card-header">
+          <h2 class="card-title">Capital Flow — Bézier Sankey Diagram</h2>
+          <div class="card-actions">
+            <span class="badge badge-green">Live Data</span>
+          </div>
+        </div>
+        <div class="card-body" style="overflow:auto;">
+          <canvas id="chart-sankey" width="1100" height="550"></canvas>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- ANOMALIES PAGE -->
+  <template id="tpl-anomalies">
+    <div class="page-enter">
+      <div class="page-header">
+        <h1 class="page-title">Anomaly Log</h1>
+        <p class="page-subtitle">AI-detected fraud, waste, and governance risks across all transactions.</p>
+      </div>
+      <div class="anomaly-controls">
+        <div class="filter-pills" id="anomaly-filters">
+          <button class="pill active" data-filter="all">All</button>
+          <button class="pill" data-filter="Critical">Critical</button>
+          <button class="pill" data-filter="High">High</button>
+          <button class="pill" data-filter="Medium">Medium</button>
+        </div>
+        <div class="scan-stats" id="scan-stats"></div>
+      </div>
+      <div class="anomaly-grid" id="anomaly-list"></div>
+    </div>
+  </template>
+
+  <!-- PREDICTIVE RISK PAGE -->
+  <template id="tpl-risk">
+    <div class="page-enter">
+      <div class="page-header">
+        <h1 class="page-title">Predictive Risk</h1>
+        <p class="page-subtitle">Lapse probability and Q4 forecast using OLS Regression and Exponential Smoothing (α=0.35).</p>
+      </div>
+      <div class="section-grid">
+        <div class="card span-2">
+          <div class="card-header"><h2 class="card-title">Risk Matrix — Department Lapse Probability</h2></div>
+          <div class="card-body">
+            <canvas id="chart-risk-matrix" height="320"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Department Risk Profiles</h2></div>
+          <div class="card-body" id="risk-profiles-list"></div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- OPTIMIZER PAGE -->
+  <template id="tpl-optimizer">
+    <div class="page-enter">
+      <div class="page-header">
+        <h1 class="page-title">Reallocation Optimizer</h1>
+        <p class="page-subtitle">Greedy algorithm recommendations to prevent year-end fund lapses.</p>
+      </div>
+      <div class="optimizer-summary" id="optimizer-summary"></div>
+      <div class="optimizer-grid" id="optimizer-list"></div>
+    </div>
+  </template>
+
+  <!-- DISTRICTS PAGE -->
+  <template id="tpl-districts">
+    <div class="page-enter">
+      <div class="page-header">
+        <h1 class="page-title">Districts</h1>
+        <p class="page-subtitle">Geo-spatial performance tracking and state benchmarking across all districts.</p>
+      </div>
+      <div class="section-grid">
+        <div class="card span-2">
+          <div class="card-header"><h2 class="card-title">District Utilization Heatmap</h2></div>
+          <div class="card-body">
+            <canvas id="chart-heatmap" height="280"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">State Rankings</h2></div>
+          <div class="card-body" id="state-rankings"></div>
+        </div>
+      </div>
+      <div class="district-table-wrapper">
+        <table class="data-table" id="districts-table">
+          <thead>
+            <tr>
+              <th>District</th><th>State</th><th>Region</th>
+              <th>Allocation</th><th>Utilized</th><th>Performance</th><th>Transactions</th><th>Flags</th>
+            </tr>
+          </thead>
+          <tbody id="districts-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
